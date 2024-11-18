@@ -30,7 +30,7 @@ Clone the repository to your desired workspace and move into the repository:
 git clone https://github.com/aws-samples/amazon-managed-service-for-apache-flink-lifecycle-management-terraform.git
 ```
 
-### 2. Build Docker mage
+### 2. Build Docker image
 Build the Docker image by running the following command:
 
 ```bash
