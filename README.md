@@ -22,7 +22,7 @@ Before starting, ensure you have the following environment variable set:
 
 ## Getting started
 
-### 1. Clone repository 
+### 1. Clone the repository 
 
 Clone the repository to your desired workspace and move into the repository:
 
@@ -30,7 +30,7 @@ Clone the repository to your desired workspace and move into the repository:
 git clone https://github.com/aws-samples/amazon-managed-service-for-apache-flink-lifecycle-management-terraform.git
 ```
 
-### 2. Build Docker image
+### 2. Build the Docker image
 Build the Docker image by running the following command:
 
 ```bash
@@ -39,7 +39,7 @@ docker build -t msf-terraform .
 
 This command builds a Docker image named `msf-terraform` using the Dockerfile in the current directory. The image contains all necessary dependencies for running Terraform and AWS operations.
 
-### 3. Export AWS credentials
+### 3. Export the AWS credentials
 Make sure to put your correct AWS profile name in `$AWS_PROFILE`.
 
 ```bash
@@ -61,7 +61,7 @@ You need to create the resources in advance in your AWS account and provide the 
 - Region, e.g. `us-east-1`
 - DynamoDB table name
 
-### 5. Check config variables
+### 5. Check the config variables
 Check the config variables for your Flink application inside `terraform/config.tfvars.json` and change as desired. 
 
 ### 6. Run the deployment container
