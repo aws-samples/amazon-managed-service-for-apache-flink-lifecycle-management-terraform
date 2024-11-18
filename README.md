@@ -27,7 +27,7 @@ Before starting, ensure you have the following environment variable set:
 Clone the repository to your desired workspace and move into the repository:
 
 ```bash
-git clone 
+git clone https://github.com/aws-samples/amazon-managed-service-for-apache-flink-lifecycle-management-terraform.git
 ```
 
 ### 2. Build Docker Image
