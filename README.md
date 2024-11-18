@@ -1,4 +1,4 @@
-# Amazon Managed Service for Apache Flink application lifecycle management with Terraform
+# Amazon Managed Service for Apache Flink Application Lifecycle Management with Terraform
 
 This code sample demonstrates how to use Terraform to control the lifecycle of a Managed Service for Apache Flink (MSF) application using Docker. The process ensures consistent deployment environments and secure handling of AWS credentials.
 
