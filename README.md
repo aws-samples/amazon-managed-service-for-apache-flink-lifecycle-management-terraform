@@ -105,6 +105,11 @@ docker run --env-file .env.docker --rm -it \
 
 Note that you have to destroy your DynamoDB table as well as the S3 bucket for Terraform state management separately. 
 
+Run the following command to delete the created Docker image:
+```bash
+docker image rm msf-terraform
+```
+
 ## Security
 
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
