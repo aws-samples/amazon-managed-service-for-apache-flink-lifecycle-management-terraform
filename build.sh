@@ -25,14 +25,14 @@ check_status() {
 CURRENT_DIR=$(pwd)
 log "Current directory: $CURRENT_DIR"
 
-# Check if flink-s3 directory exists
-if [ ! -d "$CURRENT_DIR/flink-s3" ]; then
-    log "ERROR: flink-s3 directory not found in $CURRENT_DIR"
+# Check if flink directory exists
+if [ ! -d "$CURRENT_DIR/flink" ]; then
+    log "ERROR: flink directory not found in $CURRENT_DIR"
     exit 1
 fi
 
-# Navigate to flink-s3 directory
-cd "$CURRENT_DIR/flink-s3"
+# Navigate to flink directory
+cd "$CURRENT_DIR/flink"
 
 # Clean and package with Maven
 log "Starting Maven clean package..."

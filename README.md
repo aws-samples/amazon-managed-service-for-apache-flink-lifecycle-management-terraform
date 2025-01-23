@@ -68,9 +68,9 @@ Check the config variables for your Flink application inside `terraform/config.t
 
 ```bash
 docker run --env-file .env.docker --rm -it \
-  -v ./flink-s3:/home/flinkuser/flink-s3 \
-  -v ./terraform:/home/flinkuser/terraform \
-  -v ./build.sh:/home/flinkuser/build.sh \
+  -v ./flink:/home/flink-project/flink \
+  -v ./terraform:/home/flink-project/terraform \
+  -v ./build.sh:/home/flink-project/build.sh \
   msf-terraform bash build.sh apply
 ```
 
@@ -87,9 +87,9 @@ Update a config variable inside `terraform/config.tfvars.json` and simply run:
 
 ```bash
 docker run --env-file .env.docker --rm -it \
-  -v ./flink-s3:/home/flinkuser/flink-s3 \
-  -v ./terraform:/home/flinkuser/terraform \
-  -v ./build.sh:/home/flinkuser/build.sh \
+  -v ./flink:/home/flink-project/flink \
+  -v ./terraform:/home/flink-project/terraform \
+  -v ./build.sh:/home/flink-project/build.sh \
   msf-terraform bash build.sh apply
 ```
 
@@ -97,9 +97,9 @@ docker run --env-file .env.docker --rm -it \
 Run the following command to destroy the created resources: 
 ```bash
 docker run --env-file .env.docker --rm -it \
-  -v ./flink-s3:/home/flinkuser/flink-s3 \
-  -v ./terraform:/home/flinkuser/terraform \
-  -v ./build.sh:/home/flinkuser/build.sh \
+  -v ./flink:/home/flink-project/flink \
+  -v ./terraform:/home/flink-project/terraform \
+  -v ./build.sh:/home/flink-project/build.sh \
   msf-terraform bash build.sh destroy
 ```
 

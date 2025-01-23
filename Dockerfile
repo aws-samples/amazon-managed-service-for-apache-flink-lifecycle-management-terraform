@@ -8,16 +8,16 @@ RUN yum update -y && \
     yum clean all
 
 # Create a non-root user
-RUN useradd -m -s /bin/bash flinkuser
+RUN useradd -m -s /bin/bash flink-project
 
 # Set the working directory
-WORKDIR /home/flinkuser
+WORKDIR /home/flink-project
 
 # Change ownership of the working directory
-RUN chown -R flinkuser:flinkuser /home/flinkuser
+RUN chown -R flink-project:flink-project /home/flink-project
 
 # Switch to the non-root user
-USER flinkuser
+USER flink-project
 
 # Add HEALTHCHECK instruction
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \

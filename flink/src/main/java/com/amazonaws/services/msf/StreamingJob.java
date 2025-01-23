@@ -126,7 +126,7 @@ public class StreamingJob {
 
                 @Override
                 public Double getResult(Tuple2<Double, Long> accumulator) {
-                    return accumulator.f0 / accumulator.f1; // Calculate the average
+                    return (Double) (accumulator.f0 / accumulator.f1); // Calculate the average
                 }
 
                 @Override
