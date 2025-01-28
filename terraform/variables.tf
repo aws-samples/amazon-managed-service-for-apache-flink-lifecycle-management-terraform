@@ -60,6 +60,16 @@ variable "flink_app_snapshots_enabled" {
   default = true
 }
 
+variable "flink_app_restore_type" {
+  type = string
+  default = "RESTORE_FROM_LATEST_SNAPSHOT"
+}
+
+variable "flink_app_snapshot_name" {
+  type = string
+  default = ""
+}
+
 variable "flink_app_start" {
   type    = bool
   default = true

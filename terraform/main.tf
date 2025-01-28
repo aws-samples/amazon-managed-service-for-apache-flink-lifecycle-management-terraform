@@ -121,7 +121,8 @@ resource "aws_kinesisanalyticsv2_application" "flink_app" {
 
     run_configuration {
         application_restore_configuration {
-            application_restore_type = "RESTORE_FROM_LATEST_SNAPSHOT"
+            application_restore_type = var.flink_app_restore_type
+            snapshot_name = var.flink_app_snapshot_name
         }
         
         flink_run_configuration {
