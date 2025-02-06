@@ -18,9 +18,12 @@ This code sample demonstrates how to use Terraform to control the lifecycle of a
 
 The Terraform code in this example only manages the Managed Service for Apache Flink application.
 
-Two additional resources are required, in the same AWS account and region where you are going to deploy the application:
-1. An Amazon Kinesis Data Stream, named `ExampleOutputStream`. Capacity mode = Provisioned, Provisioned Shards = 1, or more.
-2. An Amazon S3 bucket, where the application JAR will be uploaded. For simplicity, the same bucket is used to store the Terraform remote state.
+Additional resources are required, in the same AWS account and region where you are going to deploy the application. 
+These resources must be manually created:
+1. A Kinesis Data Stream, named `ExampleOutputStream`. Capacity mode = Provisioned, Provisioned Shards = 1, or more.
+2. An S3 bucket, where the application JAR will be uploaded. For simplicity, the same bucket is used to store the Terraform remote state. It is recommended to [enable Bucket Versioning](https://developer.hashicorp.com/terraform/language/backend/s3) on the S3 bucket to allow for state recovery.
+
+Do not forget to create the Terraform state backend configuration as described [later](#4-terraform-state-backend) with the name of the bucket.
 
 ## Environment variables
 
@@ -61,13 +64,20 @@ This step:
 This workflow ensures secure credential handling without exposing them in the command line.
 
 
-### 4. Terraform state backend 
-Amazon S3 is used to store the Terraform state and Amazon DynamoDB for state locking and consistency checking. Make sure the values in `terraform/backend.config` are correct. It is recommended to [enable Bucket Versioning](https://developer.hashicorp.com/terraform/language/backend/s3) on the S3 bucket to allow for state recovery. 
-You need to create the resources in advance in your AWS account and provide the corresponding values inside the `terraform/backend.config`:
-- S3 bucket name
-- Key name, e.g. `terraform/terraform.tfstate`
-- Region, e.g. `us-east-1`
-- DynamoDB table name
+### 4. Terraform state backend
+Amazon S3 is used to store the Terraform state and Amazon DynamoDB for state locking and consistency checking. 
+
+In the `./terraform` directory, create a file called `backend.conf`, or rename and edit [`./terraform/backend.conf-example`](terraform/backend.conf-example), with the following content:
+
+```
+bucket = "your-s3-bucket-name"
+key = "terraform/terraform.tfstate"
+region = "us-east-1"
+```
+
+Replace `your-s3-bucket-name` and `your-dynamodb-table` with the name of the S3 bucket and DynamoDB table you created, and make sure `region` matches the AWS region you are working on.
+
+See [Terraform S3 state backend documentation](https://developer.hashicorp.com/terraform/language/backend/s3) for details.
 
 ### 5. Check the config variables
 Check the config variables for your Flink application inside `terraform/config.tfvars.json` and change as desired. 
