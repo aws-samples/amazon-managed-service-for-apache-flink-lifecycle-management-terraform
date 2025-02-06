@@ -1,0 +1,4 @@
+/.idea/
+/flink/target/
+/flink/dependency-reduced-pom.xml
+/.DS_Store

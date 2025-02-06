@@ -1,6 +1,6 @@
 # Amazon Managed Service for Apache Flink Application Lifecycle Management with Terraform
 
-This code sample demonstrates how to use Terraform to control the lifecycle of a Managed Service for Apache Flink (MSF) application using Docker. The process ensures consistent deployment environments and secure handling of AWS credentials.
+This code sample demonstrates how to use Terraform to control the lifecycle of a Managed Service for Apache Flink application using Docker. The process ensures consistent deployment environments and secure handling of AWS credentials.
 
 ## Architecture overview
 
@@ -13,6 +13,14 @@ This code sample demonstrates how to use Terraform to control the lifecycle of a
 * [Apache Maven 3.9.6 or later](https://maven.apache.org/)
 * [Docker](https://docs.docker.com/engine/install/) installed and running on your machine 
 * [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) installed and configured with appropriate [AWS profile](https://docs.aws.amazon.com/cli/v1/userguide/cli-configure-files.html)
+
+## AWS resources required
+
+The Terraform code in this example only manages the Managed Service for Apache Flink application.
+
+Two additional resources are required, in the same AWS account and region where you are going to deploy the application:
+1. An Amazon Kinesis Data Stream, named `ExampleOutputStream`. Capacity mode = Provisioned, Provisioned Shards = 1, or more.
+2. An Amazon S3 bucket, where the application JAR will be uploaded. For simplicity, the same bucket is used to store the Terraform remote state.
 
 ## Environment variables
 

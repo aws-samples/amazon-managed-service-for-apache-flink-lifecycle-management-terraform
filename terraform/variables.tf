@@ -30,6 +30,10 @@ variable "s3_file_key" {
   type = string
 }
 
+variable "output_stream_name" {
+  type = string
+}
+
 variable "flink_app_parallelism" {
   type    = number
   default = 1

@@ -1,8 +1,9 @@
 [
   {
-    "PropertyGroupId": "bucket",
+    "PropertyGroupId": "OutputStream0",
     "PropertyMap": {
-      "name": "<BucketName>"
+      "stream.name": "ExampleOutputStream",
+      "aws.region": "us-east-1"
     }
   }
 ]
