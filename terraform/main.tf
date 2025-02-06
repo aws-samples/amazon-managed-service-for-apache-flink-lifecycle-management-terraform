@@ -40,7 +40,7 @@ data "aws_iam_policy_document" "flink_app" {
   statement {
     actions = [
       "logs:DescribeLogGroups",
-      "logs:ListCloudwatchLogStreams",
+      "logs:DescribeLogStreams",
       "logs:PutLogEvents"
     ]
     resources = [
