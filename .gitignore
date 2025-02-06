@@ -3,4 +3,4 @@
 /flink/dependency-reduced-pom.xml
 /.DS_Store
 /.env.docker
-/terraform/backend.conf
+/terraform/plan

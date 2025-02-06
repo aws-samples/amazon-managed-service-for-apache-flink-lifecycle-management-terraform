@@ -1,3 +1,0 @@
-bucket = "your-s3-bucket-name"
-key = "terraform/terraform.tfstate"
-region = "us-east-1"

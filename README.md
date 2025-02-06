@@ -22,8 +22,9 @@ Additional resources are required, in the same AWS account and region where you 
 These resources must be manually created:
 1. A Kinesis Data Stream, named `ExampleOutputStream`. Capacity mode = Provisioned, Provisioned Shards = 1, or more.
 2. An S3 bucket, where the application JAR will be uploaded. For simplicity, the same bucket is used to store the Terraform remote state. It is recommended to [enable Bucket Versioning](https://developer.hashicorp.com/terraform/language/backend/s3) on the S3 bucket to allow for state recovery.
+3. A DynamoDB Table used by Terraform for locking. Must have a key called `LockID`.
 
-Do not forget to create the Terraform state backend configuration as described [later](#4-terraform-state-backend) with the name of the bucket.
+Do not forget to edit the Terraform state backend configuration as described [later](#4-terraform-state-backend) with the name of the bucket.
 
 ## Environment variables
 
@@ -42,6 +43,7 @@ git clone https://github.com/aws-samples/amazon-managed-service-for-apache-flink
 ```
 
 ### 2. Build the Docker image
+
 Build the Docker image by running the following command:
 
 ```bash
@@ -51,6 +53,7 @@ docker build -t msf-terraform .
 This command builds a Docker image named `msf-terraform` using the Dockerfile in the current directory. The image contains all necessary dependencies for running Terraform and AWS operations.
 
 ### 3. Export the AWS credentials
+
 Make sure to put your correct AWS profile name in `$AWS_PROFILE`.
 
 ```bash
@@ -65,14 +68,16 @@ This workflow ensures secure credential handling without exposing them in the co
 
 
 ### 4. Terraform state backend
+
 Amazon S3 is used to store the Terraform state and Amazon DynamoDB for state locking and consistency checking. 
 
-In the `./terraform` directory, create a file called `backend.conf`, or rename and edit [`./terraform/backend.conf-example`](terraform/backend.conf-example), with the following content:
+Edit the file  `./terraform/backend.conf` to match region and names of  S3 bucket and DynamoDB table that you have created.
 
 ```
 bucket = "your-s3-bucket-name"
 key = "terraform/terraform.tfstate"
 region = "us-east-1"
+dynamodb_table = "your-dynamodb-table`
 ```
 
 Replace `your-s3-bucket-name` and `your-dynamodb-table` with the name of the S3 bucket and DynamoDB table you created, and make sure `region` matches the AWS region you are working on.
@@ -80,9 +85,27 @@ Replace `your-s3-bucket-name` and `your-dynamodb-table` with the name of the S3 
 See [Terraform S3 state backend documentation](https://developer.hashicorp.com/terraform/language/backend/s3) for details.
 
 ### 5. Check the config variables
+
 Check the config variables for your Flink application inside `terraform/config.tfvars.json` and change as desired. 
 
-### 6. Run the deployment container
+### 6. Initialize Terraform
+
+Before actually using Terraform to deploy the application, we need to initialize Terraform state once.
+
+For simplicity, in this example we will run the entire build once passing the `init` command to Terraform.
+In a more real scenario, you have to run one off terraform init, without the application build.
+
+```bash
+docker run --env-file .env.docker --rm -it \
+  -v ./flink:/home/flink-project/flink \
+  -v ./terraform:/home/flink-project/terraform \
+  -v ./build.sh:/home/flink-project/build.sh \
+  msf-terraform bash build.sh init
+```
+
+### 7. Run the deployment container
+
+We can now run the deployment.
 
 ```bash
 docker run --env-file .env.docker --rm -it \
@@ -100,7 +123,8 @@ This command:
 
 Note that you have to pass the desired Terraform command at the end of the Docker run command, e.g. `init`, `plan`, `apply` or `destroy`. 
 
-### 7. Update the deployment container 
+### 8. Update the deployment container 
+
 Update a config variable inside `terraform/config.tfvars.json` and simply run: 
 
 ```bash
@@ -111,7 +135,8 @@ docker run --env-file .env.docker --rm -it \
   msf-terraform bash build.sh apply
 ```
 
-### 8. Destroy the deployment container and resources  
+### 9. Destroy the deployment container and resources  
+
 Run the following command to destroy the created resources: 
 ```bash
 docker run --env-file .env.docker --rm -it \
@@ -124,6 +149,7 @@ docker run --env-file .env.docker --rm -it \
 Note that you have to destroy your DynamoDB table as well as the S3 bucket for Terraform state management separately. 
 
 Run the following command to delete the created Docker image:
+
 ```bash
 docker image rm msf-terraform
 ```
