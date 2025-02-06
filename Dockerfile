@@ -2,7 +2,7 @@ FROM amazonlinux:2
 
 # Update the system and install necessary packages
 RUN yum update -y && \
-    yum install -y shadow-utils maven awscli java-17-amazon-corretto jq yum-utils && \
+    yum install -y shadow-utils maven awscli java-11-amazon-corretto jq yum-utils && \
     yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo && \
     yum -y install terraform && \
     yum clean all
