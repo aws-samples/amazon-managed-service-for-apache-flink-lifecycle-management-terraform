@@ -32,6 +32,15 @@ Before starting, ensure you have the following environment variable set:
 
 - `AWS_PROFILE`: Your AWS profile name that contains the necessary credentials
 
+## AWS Region
+
+This example is designed to be deployed in `us-east-1`. Your AWS profile should match this region.
+
+If you choose to use a different region, do not forget to amend the region in the following files:
+* `terraform/config.tvars.json`
+* `terraform/backend.conf`
+* `terraform/variables.tf`
+
 ## Getting started
 
 ### 1. Clone the repository 
