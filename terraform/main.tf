@@ -34,7 +34,7 @@ data "aws_iam_policy_document" "flink_app" {
       "kinesis:ListShards"
     ]
     resources = [
-      "arn:aws:kinesis:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:stream/${var.output_stream_name}"
+      "arn:aws:kinesis:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:stream/${var.flink_app_environment_variables["OutputStream0"]["stream.name"]}"
     ]
   }
   statement {

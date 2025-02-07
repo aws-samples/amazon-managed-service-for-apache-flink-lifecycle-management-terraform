@@ -96,8 +96,7 @@ case $TERRAFORM_ACTION in
         ;;
     "destroy")
         terraform init -backend-config=backend.conf
-        terraform plan -out=plan -var-file=config.tfvars.json -var="s3_file_key=flink-app/$FILE_TO_COPY_KEY"
-        terraform destroy -var-file=config.tfvars.json -auto-approve
+        terraform destroy -var-file=config.tfvars.json -var="s3_file_key=flink-app/$FILE_TO_COPY_KEY" -auto-approve
         ;;
     *)
         log "Invalid command provided. Available commands: init, plan, apply, destroy."

@@ -14,17 +14,19 @@ This code sample demonstrates how to use Terraform to control the lifecycle of a
 * [Docker](https://docs.docker.com/engine/install/) installed and running on your machine 
 * [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) installed and configured with appropriate [AWS profile](https://docs.aws.amazon.com/cli/v1/userguide/cli-configure-files.html)
 
-## AWS resources required
+The Terraform code in this example only manages the Managed Service for Apache Flink application. Additional resources are required, in the same account and region where you are going to deploy the application. 
 
-The Terraform code in this example only manages the Managed Service for Apache Flink application.
-
-Additional resources are required, in the same AWS account and region where you are going to deploy the application. 
 These resources must be manually created:
-1. A Kinesis Data Stream, named `ExampleOutputStream`. Capacity mode = Provisioned, Provisioned Shards = 1, or more.
-2. An S3 bucket, where the application JAR will be uploaded. For simplicity, the same bucket is used to store the Terraform remote state. It is recommended to [enable Bucket Versioning](https://developer.hashicorp.com/terraform/language/backend/s3) on the S3 bucket to allow for state recovery.
-3. A DynamoDB Table used by Terraform for locking. Must have a key called `LockID`.
+* Kinesis data stream
+  * Data stream name: `ExampleOutputStream`
+  * Capacity mode: `Provisioned`
+  * Number of provisioned shards: 1 or more
+* S3 bucket 
+  * Stores the application JAR. For simplicity, the same bucket is used to store the Terraform remote state. It is recommended to [enable Bucket Versioning](https://developer.hashicorp.com/terraform/language/backend/s3) on the S3 bucket to allow for state recovery.
+* DynamoDB table 
+  * Used by Terraform for locking. The primary key must be called `LockID`.
 
-Do not forget to edit the Terraform state backend configuration as described [later](#4-terraform-state-backend) with the name of the bucket.
+Do not forget to edit the Terraform state backend configuration as described [later](#4-terraform-state-backend) with the bucket name and table name.
 
 ## Environment variables
 
@@ -32,11 +34,8 @@ Before starting, ensure you have the following environment variable set:
 
 - `AWS_PROFILE`: Your AWS profile name that contains the necessary credentials
 
-## AWS Region
-
-This example is designed to be deployed in `us-east-1`. Your AWS profile should match this region.
-
-If you choose to use a different region, do not forget to amend the region in the following files:
+### AWS Region 
+This example is designed to be deployed in `us-east-1`. Your AWS profile should match this region. If you choose to use a different region, do not forget to amend the region in the following files:
 * `terraform/config.tvars.json`
 * `terraform/backend.conf`
 * `terraform/variables.tf`
@@ -97,22 +96,7 @@ See [Terraform S3 state backend documentation](https://developer.hashicorp.com/t
 
 Check the config variables for your Flink application inside `terraform/config.tfvars.json` and change as desired. 
 
-### 6. Initialize Terraform
-
-Before actually using Terraform to deploy the application, we need to initialize Terraform state once.
-
-For simplicity, in this example we will run the entire build once passing the `init` command to Terraform.
-In a more real scenario, you have to run one off terraform init, without the application build.
-
-```bash
-docker run --env-file .env.docker --rm -it \
-  -v ./flink:/home/flink-project/flink \
-  -v ./terraform:/home/flink-project/terraform \
-  -v ./build.sh:/home/flink-project/build.sh \
-  msf-terraform bash build.sh init
-```
-
-### 7. Run the deployment container
+### 6. Run the deployment container
 
 We can now run the deployment.
 
@@ -132,7 +116,7 @@ This command:
 
 Note that you have to pass the desired Terraform command at the end of the Docker run command, e.g. `init`, `plan`, `apply` or `destroy`. 
 
-### 8. Update the deployment container 
+### 7. Update the deployment container 
 
 Update a config variable inside `terraform/config.tfvars.json` and simply run: 
 
@@ -144,7 +128,7 @@ docker run --env-file .env.docker --rm -it \
   msf-terraform bash build.sh apply
 ```
 
-### 9. Destroy the deployment container and resources  
+### 8. Destroy the deployment container and resources  
 
 Run the following command to destroy the created resources: 
 ```bash
@@ -155,7 +139,7 @@ docker run --env-file .env.docker --rm -it \
   msf-terraform bash build.sh destroy
 ```
 
-Note that you have to destroy your DynamoDB table as well as the S3 bucket for Terraform state management separately. 
+Note that you have to destroy your DynamoDB table as well as the S3 separately. 
 
 Run the following command to delete the created Docker image:
 
