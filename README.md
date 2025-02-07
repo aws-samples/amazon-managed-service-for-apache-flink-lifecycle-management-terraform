@@ -4,7 +4,7 @@ This code sample demonstrates how to use Terraform to control the lifecycle of a
 
 ## Architecture overview
 
-<img src="resources/architecture_overview.png" alt="Architecture Overview">
+![Architecture overview](resources/architecture_overview.png)
 
 ## Pre-requisites
 
