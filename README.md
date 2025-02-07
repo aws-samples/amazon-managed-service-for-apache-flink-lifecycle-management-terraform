@@ -96,6 +96,8 @@ See [Terraform S3 state backend documentation](https://developer.hashicorp.com/t
 
 Check the config variables for your Flink application inside `terraform/config.tfvars.json` and change as desired. 
 
+Importantly, you have to ensure that `s3_bucket_name` in `terraform/config.tfvars.json` matches the previously created S3 bucket, storing the application JAR file.
+
 ### 6. Run the deployment container
 
 We can now run the deployment.
