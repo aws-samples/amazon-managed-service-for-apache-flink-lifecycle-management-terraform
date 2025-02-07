@@ -82,7 +82,7 @@ This workflow ensures secure credential handling without exposing them in the co
 
 Amazon S3 is used to store the Terraform state and Amazon DynamoDB for state locking and consistency checking. 
 
-Edit the file  `./terraform/backend.conf`:
+Edit the file `./terraform/backend.conf`:
 
 ```
 bucket = "your-s3-bucket-name"
@@ -99,7 +99,7 @@ See [Terraform S3 state backend documentation](https://developer.hashicorp.com/t
 
 Check the config variables for your Flink application inside `terraform/config.tfvars.json` and change as desired. 
 
-In particular, make sure that the name of the S3 bucket, the Kinesis Stream, and the AWS region match those you are using.
+In particular, make sure that the name of the S3 bucket, the Kinesis data stream, and the AWS region match those you are using.
 
 ### 6. Run the deployment container
 
@@ -154,16 +154,11 @@ docker image rm msf-terraform
 
 ## Known simplifications and limitations
 
-This example is for demonstrations purposes and allows you to simulate different phases of the application lifecycle.
+This example is for demonstrations purposes and allows you to simulate different phases of the application lifecycle. For simplicity, both application code, configuration, and Terraform code are in the same repository. Also, we have a single `build.sh` script that builds the Apache Flink application, uploads a new JAR to S3, and executes Terraform, regardless of the changes.
 
-For simplicity, both application code, configuration, and Terraform code are in the same repo. 
-Also, we have a single build command that build the Flink application, upload a new JAR to S3, and execute Terraform, regardless of the changes.
+In a real-world CI/CD you probably separate building the application and uploading the JAR file, and trigger it only on specific actions (e.g. a Git commit or merge to the application code).
 
-In a real world CI/CD you probably separate application build and JAR upload, and trigger it only on specific actions (e.g. a Git commit or merge to the application code).
-
-Also, this example uses the build timestamp appended to the JAR file name to "version" it. 
-In a real world you should use a JAR naming related to the git commit, or other versioning, that links a unique JAR to a unique state of the code, following any best practices you use for your SDLC.
-We recommend not to overwrite the same JAR file, always using the same name.
+Also, this example uses the build timestamp appended to the JAR file name to *version* it. In a real-world application you should use a JAR naming related to the Git commit, or other versioning, that links a unique JAR to a unique state of the code, following the best practices you use for your software development lifecycle (SDLC). We do not recommend to overwrite the same JAR file, always using the same name.
 
 The example also deliberately hardwires the AWS region to keep the example simple.
 The region can be parametrized using some additional parameter and templating mechanism.
