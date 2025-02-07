@@ -29,6 +29,16 @@ data "aws_iam_policy_document" "flink_app" {
   }
   statement {
     actions = [
+      "kinesis:DescribeStream*",
+      "kinesis:PutRecord*",
+      "kinesis:ListShards"
+    ]
+    resources = [
+      "arn:aws:kinesis:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:stream/${var.output_stream_name}"
+    ]
+  }
+  statement {
+    actions = [
       "logs:DescribeLogGroups",
       "logs:DescribeLogStreams",
       "logs:PutLogEvents"
