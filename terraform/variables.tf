@@ -9,7 +9,7 @@ variable "flink_app_name" {
 
 variable "region" {
   type = string
-  default = "eu-west-1"
+  default = "us-east-1"
 }
 
 variable "flink_app_runtime_environment" {
