@@ -6,3 +6,4 @@
 /terraform/plan
 /terraform/.terraform/
 /terraform/.terraform.lock.hcl
+/terraform/terraform.iml
