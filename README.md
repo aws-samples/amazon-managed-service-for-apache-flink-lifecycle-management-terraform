@@ -62,7 +62,9 @@ This command builds a Docker image named `msf-terraform` using the Dockerfile in
 
 ### 3. Export the AWS credentials
 
-Make sure to put your correct AWS profile name in `$AWS_PROFILE`.
+Make sure to put your correct AWS profile name in `$AWS_PROFILE` and that your profile is authenticated and has sufficient permissions.
+
+Then run the following command to extract the current credentials:
 
 ```bash
 aws configure export-credentials --profile $AWS_PROFILE --format env-no-export > .env.docker
@@ -74,12 +76,13 @@ This step:
 
 This workflow ensures secure credential handling without exposing them in the command line.
 
+**Important**: If you authenticate with AWS using temporary credentials, often with corporate SSO, you may need to execute this command again when credentials are renewed.
 
 ### 4. Terraform state backend
 
 Amazon S3 is used to store the Terraform state and Amazon DynamoDB for state locking and consistency checking. 
 
-Edit the file  `./terraform/backend.conf` to match region and names of  S3 bucket and DynamoDB table that you have created.
+Edit the file  `./terraform/backend.conf`:
 
 ```
 bucket = "your-s3-bucket-name"
@@ -95,6 +98,8 @@ See [Terraform S3 state backend documentation](https://developer.hashicorp.com/t
 ### 5. Check the config variables
 
 Check the config variables for your Flink application inside `terraform/config.tfvars.json` and change as desired. 
+
+In particular, make sure that the name of the S3 bucket, the Kinesis Stream, and the AWS region match those you are using.
 
 ### 6. Run the deployment container
 
@@ -114,7 +119,7 @@ This command:
 - Executes the deployment script `build.sh`
 - Builds the JAR file of the Flink application, uploads it to Amazon S3 and creates the required AWS resources using Terraform
 
-Note that you have to pass the desired Terraform command at the end of the Docker run command, e.g. `init`, `plan`, `apply` or `destroy`. 
+Note that you have to pass the desired Terraform command at the end of the Docker run command, e.g. `init`, `plan`, `apply` or `destroy`.
 
 ### 7. Update the deployment container 
 
@@ -146,6 +151,22 @@ Run the following command to delete the created Docker image:
 ```bash
 docker image rm msf-terraform
 ```
+
+## Known simplifications and limitations
+
+This example is for demonstrations purposes and allows you to simulate different phases of the application lifecycle.
+
+For simplicity, both application code, configuration, and Terraform code are in the same repo. 
+Also, we have a single build command that build the Flink application, upload a new JAR to S3, and execute Terraform, regardless of the changes.
+
+In a real world CI/CD you probably separate application build and JAR upload, and trigger it only on specific actions (e.g. a Git commit or merge to the application code).
+
+Also, this example uses the build timestamp appended to the JAR file name to "version" it. 
+In a real world you should use a JAR naming related to the git commit, or other versioning, that links a unique JAR to a unique state of the code, following any best practices you use for your SDLC.
+We recommend not to overwrite the same JAR file, always using the same name.
+
+The example also deliberately hardwires the AWS region to keep the example simple.
+The region can be parametrized using some additional parameter and templating mechanism.
 
 ## Security
 
