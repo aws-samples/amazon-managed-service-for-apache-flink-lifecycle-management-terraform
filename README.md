@@ -76,7 +76,6 @@ This step:
 
 This workflow ensures secure credential handling without exposing them in the command line.
 
-**Important**: If you authenticate with AWS using temporary credentials, often with corporate SSO, you may need to execute this command again when credentials are renewed.
 
 ### 4. Terraform state backend
 
@@ -99,7 +98,7 @@ See [Terraform S3 state backend documentation](https://developer.hashicorp.com/t
 
 Check the config variables for your Flink application inside `terraform/config.tfvars.json` and change as desired. 
 
-In particular, make sure that the name of the S3 bucket, the Kinesis Stream, and the AWS region match those you are using.
+Importantly, you have to ensure that `s3_bucket_name` in `terraform/config.tfvars.json` matches the previously created S3 bucket, storing the application JAR file.
 
 ### 6. Run the deployment container
 
