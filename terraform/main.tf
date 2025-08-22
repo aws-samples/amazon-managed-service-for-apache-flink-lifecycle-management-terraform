@@ -34,7 +34,7 @@ data "aws_iam_policy_document" "flink_app" {
       "kinesis:ListShards"
     ]
     resources = [
-      "arn:aws:kinesis:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:stream/${var.flink_app_environment_variables["OutputStream0"]["stream.name"]}"
+      "arn:aws:kinesis:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:stream/${var.flink_app_environment_variables["OutputStream0"]["stream.name"]}"
     ]
   }
   statement {
@@ -69,7 +69,7 @@ data "aws_iam_policy_document" "kms_key_policy" {
     effect = "Allow"
     principals {
       type        = "Service"
-      identifiers = ["logs.${data.aws_region.current.name}.amazonaws.com"]
+      identifiers = ["logs.${data.aws_region.current.region}.amazonaws.com"]
     }
     actions = [
       "kms:Encrypt*",
@@ -82,7 +82,7 @@ data "aws_iam_policy_document" "kms_key_policy" {
     condition {
       test     = "ArnEquals"
       variable = "kms:EncryptionContext:aws:logs:arn"
-      values   = ["arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${var.flink_app_name}"]
+      values   = ["arn:aws:logs:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:log-group:${var.flink_app_name}"]
     }
   }
 }

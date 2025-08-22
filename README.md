@@ -22,11 +22,9 @@ These resources must be manually created:
   * Capacity mode: `Provisioned`
   * Number of provisioned shards: 1 or more
 * S3 bucket 
-  * Stores the application JAR. For simplicity, the same bucket is used to store the Terraform remote state. It is recommended to [enable Bucket Versioning](https://developer.hashicorp.com/terraform/language/backend/s3) on the S3 bucket to allow for state recovery.
-* DynamoDB table 
-  * Used by Terraform for locking. The primary key must be called `LockID`.
+  * Stores the application JAR. For simplicity, the same bucket is used to store the Terraform remote state. It is recommended to [enable Bucket Versioning](https://developer.hashicorp.com/terraform/language/backend/s3) on the S3 bucket to allow for state recovery and state locking.
 
-Do not forget to edit the Terraform state backend configuration as described [later](#4-terraform-state-backend) with the bucket name and table name.
+Do not forget to edit the Terraform state backend configuration as described [later](#4-terraform-state-backend) with the bucket name and key name.
 
 ## Environment variables
 
@@ -80,7 +78,7 @@ This workflow ensures secure credential handling without exposing them in the co
 
 ### 4. Terraform state backend
 
-Amazon S3 is used to store the Terraform state and Amazon DynamoDB for state locking and consistency checking. 
+Amazon S3 is used to store the Terraform state and for state locking. 
 
 Edit the file `./terraform/backend.conf`:
 
@@ -88,10 +86,9 @@ Edit the file `./terraform/backend.conf`:
 bucket = "your-s3-bucket-name"
 key = "terraform/terraform.tfstate"
 region = "us-east-1"
-dynamodb_table = "your-dynamodb-table`
 ```
 
-Replace `your-s3-bucket-name` and `your-dynamodb-table` with the name of the S3 bucket and DynamoDB table you created, and make sure `region` matches the AWS region you are working on.
+Replace `your-s3-bucket-name` with the name of the S3 bucket, and make sure `region` matches the AWS region you are working on.
 
 See [Terraform S3 state backend documentation](https://developer.hashicorp.com/terraform/language/backend/s3) for details.
 
@@ -144,7 +141,7 @@ docker run --env-file .env.docker --rm -it \
   msf-terraform bash build.sh destroy
 ```
 
-Note that you have to destroy your DynamoDB table as well as the S3 separately. 
+Note that you have to destroy your S3 bucket separately. 
 
 Run the following command to delete the created Docker image:
 
