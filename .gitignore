@@ -7,3 +7,4 @@
 /terraform/.terraform/
 /terraform/.terraform.lock.hcl
 /terraform/terraform.iml
+.env.docker

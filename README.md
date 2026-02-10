@@ -130,24 +130,15 @@ docker run --env-file .env.docker --rm -it \
   msf-terraform bash build.sh apply
 ```
 
-### 8. Destroy the deployment container and resources  
+### 8. Destroy the deployment container and resources 
 
-Run the following command to destroy the created resources: 
-```bash
-docker run --env-file .env.docker --rm -it \
-  -v ./flink:/home/flink-project/flink \
-  -v ./terraform:/home/flink-project/terraform \
-  -v ./build.sh:/home/flink-project/build.sh \
-  msf-terraform bash build.sh destroy
-```
-
-Note that you have to destroy your S3 bucket separately. 
-
-Run the following command to delete the created Docker image:
+**Delete after use**: Run the bash sript `cleanup.sh` to destroy the deployment containers and resources (including the `.env.docker` file):
 
 ```bash
-docker image rm msf-terraform
+bash cleanup.sh
 ```
+
+Note that you have to destroy your S3 bucket as well as the Kinesis data stream separately. 
 
 ## Known simplifications and limitations
 
@@ -163,6 +154,174 @@ The region can be parametrized using some additional parameter and templating me
 ## Security
 
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
+
+### Required IAM Permissions
+
+Note that `REGION`, `ACCOUNT_ID`, `YOUR_BUCKET_NAME`, `YOUR_KINESIS_DATA_STREAM_NAME` are only placeholders.
+
+#### 1. Terraform Execution Permissions
+
+The IAM user or role executing Terraform requires the following permissions. 
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "KinesisAnalytics",
+      "Effect": "Allow",
+      "Action": [
+        "kinesisanalytics:CreateApplication",
+        "kinesisanalytics:DeleteApplication",
+        "kinesisanalytics:DescribeApplication",
+        "kinesisanalytics:UpdateApplication",
+        "kinesisanalytics:StartApplication",
+        "kinesisanalytics:StopApplication",
+        "kinesisanalytics:TagResource",
+        "kinesisanalytics:UntagResource",
+        "kinesisanalytics:ListTagsForResource"
+      ],
+      "Resource": "arn:aws:kinesisanalytics:REGION:ACCOUNT_ID:application/flink-terraform-lifecycle"
+    },
+    {
+      "Sid": "IAM",
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateRole",
+        "iam:DeleteRole",
+        "iam:GetRole",
+        "iam:PassRole",
+        "iam:PutRolePolicy",
+        "iam:DeleteRolePolicy",
+        "iam:GetRolePolicy",
+        "iam:ListRolePolicies",
+        "iam:ListAttachedRolePolicies",
+        "iam:ListInstanceProfilesForRole"
+      ],
+      "Resource": "arn:aws:iam::ACCOUNT_ID:role/flink-terraform-lifecycle"
+    },
+    {
+      "Sid": "CloudWatchLogs",
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:DeleteLogGroup",
+        "logs:DescribeLogGroups",
+        "logs:CreateLogStream",
+        "logs:DeleteLogStream",
+        "logs:DescribeLogStreams",
+        "logs:PutRetentionPolicy",
+        "logs:ListTagsLogGroup",
+        "logs:AssociateKmsKey"
+      ],
+      "Resource": "arn:aws:logs:REGION:ACCOUNT_ID:log-group:flink-terraform-lifecycle*"
+    },
+    {
+      "Sid": "KMS",
+      "Effect": "Allow",
+      "Action": [
+        "kms:CreateKey",
+        "kms:DescribeKey",
+        "kms:EnableKeyRotation",
+        "kms:GetKeyPolicy",
+        "kms:GetKeyRotationStatus",
+        "kms:ListResourceTags",
+        "kms:PutKeyPolicy",
+        "kms:ScheduleKeyDeletion",
+        "kms:TagResource"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "kms:CallerAccount": "ACCOUNT_ID"
+        }
+      }
+    }
+  ]
+}
+```
+
+#### 2. S3 Bucket Permissions (JAR Storage and Terraform State)
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "S3Bucket",
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListBucket",
+        "s3:GetBucketVersioning",
+        "s3:GetBucketLocation"
+      ],
+      "Resource": "arn:aws:s3:::YOUR_BUCKET_NAME"
+    },
+    {
+      "Sid": "S3Objects",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::YOUR_BUCKET_NAME/flink-app/*",
+        "arn:aws:s3:::YOUR_BUCKET_NAME/terraform/*"
+      ]
+    }
+  ]
+}
+```
+
+#### 3. Flink Application Role (created automatically by Terraform)
+
+This role is created by `terraform/main.tf` and attached to your Flink application:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "S3Access",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:GetObjectVersion",
+        "s3:ListBucket",
+        "s3:*Object"
+      ],
+      "Resource": [
+        "arn:aws:s3:::YOUR_BUCKET_NAME",
+        "arn:aws:s3:::YOUR_BUCKET_NAME/*"
+      ]
+    },
+    {
+      "Sid": "KinesisAccess",
+      "Effect": "Allow",
+      "Action": [
+        "kinesis:DescribeStream*",
+        "kinesis:PutRecord*",
+        "kinesis:ListShards"
+      ],
+      "Resource": "arn:aws:kinesis:REGION:ACCOUNT_ID:stream/YOUR_KINESIS_DATA_STREAM_NAME"
+    },
+    {
+      "Sid": "CloudWatchLogsAccess",
+      "Effect": "Allow",
+      "Action": [
+        "logs:DescribeLogGroups",
+        "logs:DescribeLogStreams",
+        "logs:PutLogEvents"
+      ],
+      "Resource": [
+        "arn:aws:logs:REGION:ACCOUNT_ID:log-group:flink-terraform-lifecycle",
+        "arn:aws:logs:REGION:ACCOUNT_ID:log-group:flink-terraform-lifecycle:log-stream:*"
+      ]
+    }
+  ]
+}
+```
 
 ## License
 
